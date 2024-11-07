@@ -1,4 +1,9 @@
-# Junhee API Bot
+# hypixel Attribute Bot
+준희님(junhee813@naver.com) (dc: slaylegit)
+
+#주의 
+본인의 첫번째 파이썬 프로젝트입니다. 최적화와 이것저것 부족한 부분이 많습니다.
+이해 바랍니다.
 
 #기능
 hypixel skyblock API를 사용한 디스코드 봇입니다.
