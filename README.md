@@ -9,7 +9,7 @@ ARMOR_TYPE에 맞는 부위 중, LEVEL의 ATTRIBUTE_TYPE 포함한 갑옷을 찾
 명령어를 입력 시, 하이픽셀 스카이블럭 옥션 API (URL="https://api.hypixel.net/skyblock/auctions")
 에서 총 페이지 수를 구하고, 모든 페이지를(0~TotalPages) Async(비동기)로 가져옵니다.
 
-TMI : 페이지당 평균적으로 2,200,000 글자가 있으며, 페이지는 옥션에 따라 49~51 정도 있습니다.
+TMI : 페이지당 평균적으로 2,200,000 글자가 있으며, 페이지는 옥션에 따라 49p ~ 51p 정도 있습니다.
 단순 계산 했을 때 110,000,000 글자를 Async로 1~2초 내외로 가져옵니다.
 
 이후 가져온 데이터를 1차로 bin(buy it now):, item_name = ["Crimson", "Aurora" etc...] 등을 조건비교하고,
