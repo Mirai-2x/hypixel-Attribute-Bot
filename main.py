@@ -9,37 +9,54 @@ async def at(interaction: discord.Interaction, armor: app_commands.Choice[str],a
     selected_armor = armor.value  
     selected_attribute = attribute.value
     selected_level = level.value
+    
     filtered_auctions, elapsed_time = await fetch_auctions(
         selected_armor, selected_attribute, selected_level)
     if filtered_auctions is None:
-        await interaction.followup.send("옥션 데이터를 가져오는 데 실패했습니다.")
+        embed = discord.Embed(description="데이터를 가져오는 데 실패했습니다.",
+                              color=discord.Colour.red())
+        await interaction.followup.send(embed=embed)
         return
     else:
+        # 정상적으로 옥션 데이터를 찾은 경우 메시지 출력
         if len(filtered_auctions) == 0:
-            await interaction.followup.send("조건에 맞는 옥션 데이터가 없습니다.")
+            embed = discord.Embed(description="조건에 맞는 아이템이 없습니다.",
+                                  color=discord.Colour.red())
+            await interaction.followup.send(embed=embed)
             return
         sorted_auctions = sorted(filtered_auctions,key=lambda x: x.get("starting_bid", 0))
         keywords = ["Crimson", "Terror", "Aurora", "Fervor", "Hollow"]
         top_5_auctions = sorted_auctions[:5]
-        get_1_name = top_5_auctions[0].get("item_name")
-        get_1_price = format_number(top_5_auctions[0].get("starting_bid", 0))
-        get_1_itemType = get_item_with_keywords(get_1_name, keywords)
-        get_1_link = top_5_auctions[0].get("uuid")
-        #get_1_emoji = {loaded_emotes[f'{get_1_name}']}
-        get_2_name = top_5_auctions[1].get("item_name")
-        get_2_price = format_number(top_5_auctions[1].get("starting_bid", 0))
-        get_2_itemType = get_item_with_keywords(get_2_name, keywords)
-        get_2_link = top_5_auctions[1].get("uuid")
-        get_3_name = top_5_auctions[2].get("item_name")
-        get_3_price = format_number(top_5_auctions[2].get("starting_bid", 0))
-        get_3_itemType = get_item_with_keywords(get_3_name, keywords)
-        get_3_link = top_5_auctions[2].get("uuid")
-        embed = discord.Embed(title=f"{loaded_emotes['Attribute Shard']} Attribute Finder",description=f"{selected_attribute} {selected_level}을(를) 포함한 {selected_armor}\n{len(filtered_auctions)}개의 데이터({elapsed_time:.2f}초)\n",color=discord.Colour.red())
-        embed.add_field(name=f"{loaded_emotes[f'{get_1_name}']} {get_1_itemType} {selected_armor} **({get_1_price})**",value=f"`/viewauction {get_1_link}`",inline=False)
-        embed.add_field(name=f"{loaded_emotes[f'{get_2_name}']} {get_2_itemType} {selected_armor} **({get_2_price})**",value=f"`/viewauction {get_2_link}`",inline=False)
-        embed.add_field(name=f"{loaded_emotes[f'{get_3_name}']} {get_3_itemType} {selected_armor} **({get_3_price})**",value=f"`/viewauction {get_3_link}`",inline=False)
+        def create_auction_field(auction, selected_armor, selected_attribute,selected_level, keywords):
+            item_name = auction.get("item_name")
+            price = format_number(auction.get("starting_bid", 0))
+            item_type = get_item_with_keywords(item_name, keywords)
+            link = auction.get("uuid")
+            emote = loaded_emotes.get(item_name,None) 
+
+            if item_name == "Attribute Shard":
+                field_name = f"{emote} Attribute Shard **({price})**" if emote else f"{item_type} {selected_armor} **({price})**"
+            else:
+                field_name = f"{emote} {item_type} {selected_armor} **({price})**" if emote else f"{item_type} {selected_armor} **({price})**"
+            field_value = f"`/viewauction {link}`"
+            return (field_name, field_value)
+
+        top_5_auctions = sorted_auctions[:5]
+
+        embed = discord.Embed(
+            title="Attribute Finder",
+            url="https://www.youtube.com/@%EC%A4%80%ED%9D%AC%EB%8B%98",
+            description=
+            f"**{selected_attribute}** **{selected_level}**을(를) 포함한 **{selected_armor}/Shard**\n**{len(filtered_auctions)}개**의 데이터({elapsed_time:.2f}초)\n",
+            color=discord.Colour.red())
+
+        for auction in top_5_auctions:
+            field_name, field_value = create_auction_field(
+                auction, selected_armor, selected_attribute, selected_level,
+                keywords)
+
+            embed.add_field(name=field_name, value=field_value, inline=False)
         embed.set_footer(text="준희님(slaylegit)")
-        #await interaction.response.send_message(embed=embed)
         await interaction.followup.send(embed=embed)
         return
 
